@@ -4,6 +4,8 @@ import { APP_CONFIG } from "../config/app.config";
 export class MessageService{
 
     private static instance: MessageService;
+    
+
     public static getInstance(): MessageService{
         if(!MessageService.instance){
             MessageService.instance = new MessageService();
@@ -40,6 +42,7 @@ export class MessageService{
         try{
             const response = await axios.request(config)
             if(response.status === 200){
+                console.log('reply sent to' , phoneNumber);
                 return true;
         }
         }

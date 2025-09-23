@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import { webhookMessageDto, WebhookVerificationDto, WebhookVerificationResponseDto } from "../dto/webhookVerification.dto";
 import { APP_CONFIG } from "../config/app.config";
 import { MessageService } from "./message.service";
+import { GeminiService } from "./gemini.service";
 export class WebhookService{
 
     private static instance: WebhookService;
     private messageService:MessageService;
+    private geminiService:GeminiService
 
     public static getInstance(): WebhookService {
         if(!WebhookService.instance){
@@ -16,6 +18,7 @@ export class WebhookService{
 
     private constructor(){
         this.messageService = MessageService.getInstance();
+        this.geminiService = GeminiService.getInstance();
     }
 
     public handleWebhookVerfifcation(data: WebhookVerificationDto ):WebhookVerificationResponseDto{
@@ -40,23 +43,35 @@ export class WebhookService{
 
         //extracting message from recived nottification via webhook
         //this should be send to the AI model to genarate a reply
+        const status = data.entry[0].changes[0].value.statuses;
+        if(status !== undefined && status.length>0){
+            console.log('status: ' , status[0].status);
+            return true;
+        }
+        try{
         const message = data.entry[0].changes[0].value.messages[0].text.body;
-
         //extracting phone number and name from recieved notification via webhook
         const phoneNumber = data.entry[0].changes[0].value.contacts[0].wa_id;
         const name = data.entry[0].changes[0].value.contacts[0].profile.name;
 
-        const replyMessage = `Hello ${name}, You Message Received`;
+       // const replyMessage = `Hello ${name}, You Message Received`;
+       const replyMessage = await this.geminiService.generateReply(message);
         //const repltMessage = await this.aiservice.generateReply(Message);
 
         const isReplied = await this.messageService.sendMessage(phoneNumber, replyMessage);
         
         if(isReplied){
             return true;
+            }
+        }    
+        catch(error:any){
+            console.log(error);
+            return true;
         }
 
         return false;
     }
+    
 
     
 
