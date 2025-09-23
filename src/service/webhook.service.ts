@@ -41,14 +41,16 @@ export class WebhookService{
 
     public async handleReceiveMessage(data: webhookMessageDto):Promise<boolean>{
 
-        //extracting message from recived nottification via webhook
-        //this should be send to the AI model to genarate a reply
+        //check whether the webhook notify us about the message satus
+        //if so we need to stop generating reply again and again
         const status = data.entry[0].changes[0].value.statuses;
         if(status !== undefined && status.length>0){
             console.log('status: ' , status[0].status);
             return true;
         }
         try{
+        //extracting message from recived nottification via webhook
+        //this should be send to the AI model to genarate a reply
         const message = data.entry[0].changes[0].value.messages[0].text.body;
         //extracting phone number and name from recieved notification via webhook
         const phoneNumber = data.entry[0].changes[0].value.contacts[0].wa_id;
