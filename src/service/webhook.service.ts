@@ -51,7 +51,14 @@ export class WebhookService{
         try{
         //extracting message from recived nottification via webhook
         //this should be send to the AI model to genarate a reply
-        const message = data.entry[0].changes[0].value.messages[0].text.body;
+        const message = data.entry[0].changes[0].value.messages[0].text?.body;
+        
+        if(message === undefined){
+            console.log('message is undefined');
+            console.log(JSON.stringify(data));
+            return true;
+        }
+
         //extracting phone number and name from recieved notification via webhook
         const phoneNumber = data.entry[0].changes[0].value.contacts[0].wa_id;
         const name = data.entry[0].changes[0].value.contacts[0].profile.name;
