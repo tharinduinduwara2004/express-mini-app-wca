@@ -1,6 +1,8 @@
 import express from "express";
 import { MessageController } from "./controller/message.controller";
 import { WebhookController } from "./controller/webhook.controller";
+import mongoose from "mongoose";
+import { APP_CONFIG } from "./config/app.config";
 
 const app = express();
 app.use(express.json());
@@ -20,7 +22,15 @@ app.get('/helth',(req,res)=>{
   res.send('OK');
 });
 
-
-app.listen(8558, () => {
-  console.log("Server is running on port 8558");
+mongoose.connect(APP_CONFIG.MONGO_URI).then(()=>{
+  console.log('Connectd to MongoDB');
+  app.listen(8558, () => {
+    console.log("Server is running on port 8558");
+  });
+}).catch((err)=>{
+  console.log(err);
 });
+
+//app.listen(8558, () => {
+//  console.log("Server is running on port 8558");
+//});

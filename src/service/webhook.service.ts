@@ -3,6 +3,8 @@ import { webhookMessageDto, WebhookVerificationDto, WebhookVerificationResponseD
 import { APP_CONFIG } from "../config/app.config";
 import { MessageService } from "./message.service";
 import { GeminiService } from "./gemini.service";
+import { IMessage, Role } from "../model/message.model";
+import { IncomingMessage } from "http";
 export class WebhookService{
 
     private static instance: WebhookService;
@@ -52,7 +54,9 @@ export class WebhookService{
         //extracting message from recived nottification via webhook
         //this should be send to the AI model to genarate a reply
         const message = data.entry[0].changes[0].value.messages[0].text?.body;
-        
+
+        //then we need to retrieve last five message of that user
+
         if(message === undefined){
             console.log('message is undefined');
             console.log(JSON.stringify(data));
@@ -63,8 +67,27 @@ export class WebhookService{
         const phoneNumber = data.entry[0].changes[0].value.contacts[0].wa_id;
         const name = data.entry[0].changes[0].value.contacts[0].profile.name;
 
+
+        //retriving last five message of that user
+        const history = await this.messageService.getMessagesByUserId(phoneNumber);
+
        // const replyMessage = `Hello ${name}, You Message Received`;
-       const replyMessage = await this.geminiService.generateReply(message);
+       const replyMessage = await this.geminiService.generateReply(message, history);
+
+        const newMessage: IMessage = {
+            userID : phoneNumber,
+            role : Role.USER,
+            content: message
+        }
+
+        const newReplyMessage: IMessage = {
+            userID: phoneNumber,
+            role: Role.MODEL,
+            content: replyMessage
+        }
+
+        await this.messageService.bulkCreateMessage([newMessage, newReplyMessage]);
+
         //const repltMessage = await this.aiservice.generateReply(Message);
 
         const isReplied = await this.messageService.sendMessage(phoneNumber, replyMessage);
