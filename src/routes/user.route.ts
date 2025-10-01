@@ -19,7 +19,12 @@ export class UserRouter {
     }
 
     public initRoutes(){
+        //localhost:{port}/user/ - POST
         this.router.post("/", this.userController.createUser);
+        //localhost:{port}/user/ - GET
+        //this.router.get("/", this.userController.getUser);
+        //localhost:{port}/user/hello - POST
+        this.router.post("/hello", this.userController.hello);
     }
 
     public getRouter(): Router{
