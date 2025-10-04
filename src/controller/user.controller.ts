@@ -18,8 +18,19 @@ export class UserController {
             return;
         }
 
+        try{
         const createdUser = await this.userService.createUser(user);
         res.status(201).json(this.createUser);
+        }
+        catch(error:any){
+            if(error.message === ERRORS.USER_ALREADY_EXISTS){
+                res.status(400).json({message: 'User already exists'});
+                return;
+            }
+            else{res.status(500).json({message: 'Internal service error'});
+            return;
+            }
+        }
     }
 
     //login

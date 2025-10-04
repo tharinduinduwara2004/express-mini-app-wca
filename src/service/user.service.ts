@@ -23,7 +23,11 @@ export class UserService {
             const createdUser = await this.userDao.createUser(user);
             return createdUser;
         }
-        catch(error){
+        catch(error:any){
+            if(error.code === 11000){
+                console.log(error.errorResponse.errmsg);
+                throw new Error(ERRORS.USER_ALREADY_EXISTS);
+            }
             console.log(error);
             throw error;
         }
@@ -47,8 +51,9 @@ export class UserService {
             return userWithoutPassword;
           
         }
-        catch(error){
-            console.log(error);
+        catch(error:any){
+            //console.log(error);
+            console.log(error.message);
             throw error;       
         }
 

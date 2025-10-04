@@ -20,8 +20,7 @@ export class UserDao {
             return createUser.toJSON() as IUser;
         }
         catch(error){
-            console.log(error);
-            console.log(error);
+            
             throw error;
         }
     }
