@@ -1,13 +1,16 @@
 import { IUser } from "../model/user.model";
 import { UserService } from "../service/user.service";
 import { Request,Response } from "express";
-import { LofinDto as LoginDto } from "../dao/login/login.dto";
+import { LoginDto as LoginDto } from "../dto/login/login.dto";
 import { ERRORS } from "../constants/errors.constants";
+import { AuthService } from "../service/auth.service";
 
 export class UserController {
     private userService: UserService;
+    private authService: AuthService;
     constructor(){
         this.userService = UserService.getInstance();
+        this.authService = AuthService.getInstance();
     }
 
     //regiter
@@ -19,8 +22,8 @@ export class UserController {
         }
 
         try{
-        const createdUser = await this.userService.createUser(user);
-        res.status(201).json(this.createUser);
+            const createdUser = await this.userService.createUser(user);
+            res.status(201).json(this.createUser);
         }
         catch(error:any){
             if(error.message === ERRORS.USER_ALREADY_EXISTS){
@@ -39,11 +42,11 @@ export class UserController {
         const user = req.body as unknown as LoginDto; //{email: string, password: string}
 
         try{
-            const loginUser = await this.userService.login(user);
+            const loginUser = await this.authService.login(user);
             res.status(200).json(loginUser);
         }
         catch(error:any){
-            if(error.message === ERRORS.USER_NOT_FUND){
+            if(error.message === ERRORS.USER_NOT_FOUND){
                 res.status(404).json({message: 'User not found'});
                 return;
             }

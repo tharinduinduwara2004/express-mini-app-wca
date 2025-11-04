@@ -7,6 +7,7 @@ import { UserController } from "./controller/user.controller";
 import { MessageRouter } from "./routes/message.router";
 import { UserRouter } from "./routes/user.route";
 import { WebhookRouter } from "./routes/webhook.router";
+import { AuthRouter } from "./routes/auth.routes";
 
 const app = express();
 app.use(express.json());
@@ -14,12 +15,14 @@ app.use(express.json());
 const webhookRouter = WebhookRouter.getInstance ();
 const messagesRouter = MessageRouter.getInstance();
 const userRouter = UserRouter.getInstance ();
+const authRouter = AuthRouter.getInstance ();
 
 //app.post("/send-message", messageController.sendMessage);
 
 app.use("/webhook", webhookRouter.getRouter());
 app.use("/user", userRouter.getRouter());
 app.use("/message", messagesRouter.getRouter());
+app.use("/auth", authRouter.getRouter());
 
 app.get('/helth',(req,res)=>{
   res.send('OK');
