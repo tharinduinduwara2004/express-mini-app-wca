@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controller/user.controller";
+import { AuthController } from "../controller/auth.controller";
 
 //user
 export class UserRouter {
@@ -21,6 +22,7 @@ export class UserRouter {
     public initRoutes(){
 
         this.router.post("/hello", this.userController.hello);
+        this.router.get("/me", this.userController.getCurrentUser);
 
     }
 
