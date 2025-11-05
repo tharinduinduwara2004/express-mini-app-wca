@@ -4,6 +4,7 @@ import { Request,Response } from "express";
 import { LoginDto as LoginDto } from "../dto/login/login.dto";
 import { ERRORS } from "../constants/errors.constants";
 import { AuthService } from "../service/auth.service";
+import { error } from "console";
 
 export class UserController {
     private userService: UserService;
@@ -14,53 +15,27 @@ export class UserController {
     }
 
     //regiter
-    createUser = async (req: Request, res: Response) => {
-        const user = req.body as unknown as IUser;
-        if(!user.name || !user.phoneNumber){
-            res.status(400).json({message: 'Name and phone number are required'});
-            return;
-        }
-
-        try{
-            const createdUser = await this.userService.createUser(user);
-            res.status(201).json(this.createUser);
-        }
-        catch(error:any){
-            if(error.message === ERRORS.USER_ALREADY_EXISTS){
-                res.status(400).json({message: 'User already exists'});
-                return;
-            }
-            else{res.status(500).json({message: 'Internal service error'});
-            return;
-            }
-        }
-    }
-
-    //login
-
-    login = async (req: Request, res: Response) => {
-        const user = req.body as unknown as LoginDto; //{email: string, password: string}
-
-        try{
-            const loginUser = await this.authService.login(user);
-            res.status(200).json(loginUser);
-        }
-        catch(error:any){
-            if(error.message === ERRORS.USER_NOT_FOUND){
-                res.status(404).json({message: 'User not found'});
-                return;
-            }
-            else if(error.message === ERRORS.INVALID_PASSWORD){
-                res.status(401).json({message: 'Invalid password'});
-                return;
-            }
-            else{
-                res.status(500).json({message: 'Internal server error'});
-                return;
-            }
-        }
-    }
+    
     hello = async (req: Request, res: Response) => {
-        res.status(200).json({message: 'Hello'});
+        res.status(200).json({message: 'Hllo'});
+    }
+
+    
+    getCurrentUser = async (req: Request, res:Response) => {
+        try{    
+            const token = req.headers.authorization;
+            const decoded = this.authService.verifyToken(token as string);
+            const user = await this.userService.getUserById(decoded.id);
+            console.log(user);
+            res.status(200).json(user);
+        }
+        catch(error:any){
+        if(error.message === ERRORS.INVALID_TOKEN){
+            res.status(401).json({message: 'Invalid token'});
+            return;
+        }else{
+            res.status(500).json({message: 'Internal server error'});
+            }
+        }
     }
 }

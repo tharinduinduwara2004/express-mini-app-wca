@@ -3,7 +3,7 @@ import { ERRORS } from "../constants/errors.constants";
 import { LoginDto, LoginResponseDto } from "../dto/login/login.dto";
 import jwt from 'jsonwebtoken';
 import { APP_CONFIG } from "../config/app.config";
-import { IUser } from "../model/user.model";
+import { IUser, UserType } from "../model/user.model";
 
 
 export class AuthService {
@@ -56,5 +56,19 @@ export class AuthService {
         return {accessToken, refreshToken};
     
     }
+
+    public verifyToken(token: string): {id: string, type: UserType} {
+
+        //token = 
+        try{
+            token = token.split('')[1];
+            const decoded = jwt.verify(token, APP_CONFIG.ACCESS_TOKEN_SECRET as string);
+            return decoded as {id: string, type: UserType};
+        }
+        catch(error:any){
+            throw new Error(ERRORS.INVALID_TOKEN);
+        }
+    }
+    
 
 }
