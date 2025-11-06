@@ -4,7 +4,7 @@ import { LoginDto, LoginResponseDto } from "../dto/login/login.dto";
 import jwt from 'jsonwebtoken';
 import { APP_CONFIG } from "../config/app.config";
 import { IUser, UserType } from "../model/user.model";
-
+import bcrypt from 'bcrypt';
 
 export class AuthService {
     private static instance : AuthService;

@@ -1,9 +1,7 @@
-
 import { UserDao } from "../dao/user.dao";
 import { IUser } from "../model/user.model";
 import { ERRORS } from "../constants/errors.constants";
-import { error } from "console";
-
+import bcrypt from 'bcrypt';
 
 export class UserService {
     private userDao:UserDao;
@@ -21,6 +19,8 @@ export class UserService {
 
     public async createUser(user: IUser): Promise<IUser>{
         try{
+            user.password = await bcrypt.hash(user.password,10);
+
             const createdUser = await this.userDao.createUser(user);
             return createdUser;
         }
@@ -46,6 +46,7 @@ export class UserService {
 
     public async updateUser(id: string, user: Partial<IUser>): Promise<IUser>{
         try{
+            const {password, ...rest} = user
             return await this.userDao.updateUser(id, user);
         }
         catch
