@@ -2,6 +2,7 @@
 import { UserDao } from "../dao/user.dao";
 import { IUser } from "../model/user.model";
 import { ERRORS } from "../constants/errors.constants";
+import { error } from "console";
 
 
 export class UserService {
@@ -41,6 +42,18 @@ export class UserService {
             console.log(error);
             throw error;
         }
+    }
+
+    public async updateUser(id: string, user: Partial<IUser>): Promise<IUser>{
+        try{
+            return await this.userDao.updateUser(id, user);
+        }
+        catch
+            (error:any){
+                console.log(error);
+                throw error;
+            }
+        
     }
 
 }

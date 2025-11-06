@@ -39,8 +39,18 @@ export class UserDao {
         try{
             return await User.findById(
                 new mongoose.Types.ObjectId(id),
-                {password: 0}
+                {password: withPassword}
             ).lean().exec() as IUser;
+        }catch(error){
+            console.log(error);
+            throw error;
+        }
+    }
+
+   public async updateUser(id: string, user: Partial<IUser>): Promise<IUser>{
+        try{
+            return await User.findByIdAndUpdate
+                (id, user, {new: true}).lean().exec() as IUser;
         }catch(error){
             console.log(error);
             throw error;
