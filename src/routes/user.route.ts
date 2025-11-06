@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { UserController } from "../controller/user.controller";
 import { AuthMiddleware } from "../middleware/auth.middleware";
+import { authenticateJWT } from "../middleware/auth.middleware";
 
 
 //user
@@ -26,8 +27,9 @@ export class UserRouter {
     public initRoutes(){
 
         this.router.post("/hello", this.userController.hello);
+
         this.router.get("/me",
-            this.authMiddleware.authenticateJWT, //req, res, next 
+            authenticateJWT(), //req, res, next 
             this.userController.getCurrentUser //req
         );
 
