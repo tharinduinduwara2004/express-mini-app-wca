@@ -16,7 +16,7 @@ export class AuthController{
     //register
    register = async (req: Request, res: Response) => {
            const user = req.body as unknown as IUser;
-           if(!user.name || !user.phoneNumber){
+           if(!user.name || !user.phoneNumber || !user.email || !user.password){
                res.status(400).json({message: 'Name and phone number are required'});
                return;
            }
