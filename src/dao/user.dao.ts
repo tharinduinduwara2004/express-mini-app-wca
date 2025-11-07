@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { IUser, User } from "../model/user.model";
+import { create } from "domain";
 
 export class UserDao {
     private static instance : UserDao;
@@ -12,12 +13,14 @@ export class UserDao {
 
     private constructor() {}
 
-    public async createUser(user:IUser): Promise<IUser>{
+    public async createUser(user:IUser): Promise<Omit<IUser, 'password'>>{
         try{
             const newUser = new User(user);
             const createUser =await newUser.save();
             // createdUser.phoneNumber = '';
             // createdUser.save();
+            const createUserJson = createUser.toJSON() as IUser;
+            delete (createUserJson as any).password;
             return createUser.toJSON() as IUser;
         }
         catch(error){

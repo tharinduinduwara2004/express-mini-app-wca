@@ -17,7 +17,7 @@ export class UserService {
         this.userDao = UserDao.getInstance();
     }
 
-    public async createUser(user: IUser): Promise<IUser>{
+    public async createUser(user: IUser): Promise<Omit<IUser, 'password'>>{
         try{
             user.password = await bcrypt.hash(user.password,10);
 
